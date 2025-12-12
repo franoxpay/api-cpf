@@ -14,8 +14,16 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
-  app.get("/cpf/:cpf", async (req, res) => {
-    const { cpf } = req.params;
+  app.get("/cpf", async (req, res) => {
+    const cpf = req.query.cpf as string;
+    
+    if (!cpf) {
+      return res.status(400).json({
+        statusCode: 400,
+        error: "Parâmetro 'cpf' é obrigatório. Use: /cpf?cpf=12345678901"
+      });
+    }
+    
     const cleanedCPF = cpf.replace(/\D/g, "");
 
     if (!isValidCPF(cleanedCPF)) {

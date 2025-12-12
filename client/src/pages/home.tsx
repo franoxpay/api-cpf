@@ -27,7 +27,7 @@ export default function Home() {
   const { toast } = useToast();
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const exampleEndpoint = `${baseUrl}/cpf/64408760404`;
+  const exampleEndpoint = `${baseUrl}/cpf?cpf=64408760404`;
 
   const handleCopy = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text);
@@ -51,7 +51,7 @@ export default function Home() {
     setResponse(null);
 
     try {
-      const res = await fetch(`/cpf/${cleanedCpf}`);
+      const res = await fetch(`/cpf?cpf=${cleanedCpf}`);
       const data = await res.json();
       setResponse(data);
     } catch (error) {
@@ -64,15 +64,15 @@ export default function Home() {
     }
   };
 
-  const curlExample = `curl -X GET "${baseUrl}/cpf/64408760404"`;
+  const curlExample = `curl -X GET "${baseUrl}/cpf?cpf=64408760404"`;
   
-  const jsExample = `fetch("${baseUrl}/cpf/64408760404")
+  const jsExample = `fetch("${baseUrl}/cpf?cpf=64408760404")
   .then(res => res.json())
   .then(data => console.log(data));`;
 
   const pythonExample = `import requests
 
-response = requests.get("${baseUrl}/cpf/64408760404")
+response = requests.get("${baseUrl}/cpf?cpf=64408760404")
 data = response.json()
 print(data)`;
 
@@ -157,12 +157,12 @@ print(data)`;
             <div className="flex items-center gap-2 p-4 bg-muted rounded-md font-mono text-sm">
               <Badge variant="default" className="shrink-0">GET</Badge>
               <code className="flex-1 overflow-x-auto" data-testid="text-endpoint">
-                {baseUrl}/cpf/:cpf
+                {baseUrl}/cpf?cpf=&#123;&#123;cpf&#125;&#125;
               </code>
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => handleCopy(`${baseUrl}/cpf/:cpf`, "endpoint")}
+                onClick={() => handleCopy(`${baseUrl}/cpf?cpf={{cpf}}`, "endpoint")}
                 data-testid="button-copy-endpoint"
               >
                 {copied === "endpoint" ? (
@@ -173,7 +173,7 @@ print(data)`;
               </Button>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Substitua <code className="bg-muted px-1 py-0.5 rounded">:cpf</code> pelo n\u00famero do CPF (apenas n\u00fameros, sem pontos ou tra\u00e7os).
+              Substitua <code className="bg-muted px-1 py-0.5 rounded">{"{{cpf}}"}</code> pelo número do CPF (apenas números, sem pontos ou traços).
             </p>
           </CardContent>
         </Card>
