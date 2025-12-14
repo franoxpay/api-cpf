@@ -2,11 +2,31 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
-const CPF_API_URL = "http://185.228.72.8:8080/pessoas";
+const CPF_API_URL = "http://164.68.109.21/api2.php";
 
 function isValidCPF(cpf: string): boolean {
   const cleaned = cpf.replace(/\D/g, "");
   return cleaned.length === 11 && /^\d{11}$/.test(cleaned);
+}
+
+function formatCPF(cpf: string): string {
+  const cleaned = cpf.replace(/\D/g, "");
+  return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function formatSexo(sexo: string): string {
+  if (sexo === "M") return "Masculino";
+  if (sexo === "F") return "Feminino";
+  return sexo;
 }
 
 export async function registerRoutes(
@@ -34,7 +54,7 @@ export async function registerRoutes(
     }
 
     try {
-      const apiUrl = `${CPF_API_URL}/?cpf=${cleanedCPF}`;
+      const apiUrl = `${CPF_API_URL}?cpf=${cleanedCPF}`;
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -50,7 +70,16 @@ export async function registerRoutes(
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
+      const rawData = await response.json();
+
+      const data = {
+        status: response.status,
+        cpf: formatCPF(rawData.CPF || cleanedCPF),
+        nome: rawData.NOME || "",
+        nascimento: formatDate(rawData.NASC),
+        sexo: formatSexo(rawData.SEXO),
+        mae: rawData.NOME_MAE || ""
+      };
 
       return res.status(response.status).json({
         statusCode: response.status,
