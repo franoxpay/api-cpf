@@ -29,6 +29,15 @@ function formatSexo(sexo: string): string {
   return sexo;
 }
 
+function toProperCase(text: string): string {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -75,10 +84,10 @@ export async function registerRoutes(
       const data = {
         status: response.status,
         cpf: formatCPF(rawData.CPF || cleanedCPF),
-        nome: rawData.NOME || "",
+        nome: toProperCase(rawData.NOME || ""),
         nascimento: formatDate(rawData.NASC),
         sexo: formatSexo(rawData.SEXO),
-        mae: rawData.NOME_MAE || ""
+        mae: toProperCase(rawData.NOME_MAE || "")
       };
 
       return res.status(response.status).json({
