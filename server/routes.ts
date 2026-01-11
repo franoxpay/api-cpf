@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
-const CPF_API_URL = "http://164.68.109.21/api2.php";
+const CPF_API_URL = process.env.CPF_API_URL;
 
 function isValidCPF(cpf: string): boolean {
   const cleaned = cpf.replace(/\D/g, "");
@@ -44,6 +44,13 @@ export async function registerRoutes(
 ): Promise<Server> {
   
   app.get("/cpf", async (req, res) => {
+    if (!CPF_API_URL) {
+      return res.status(500).json({
+        statusCode: 500,
+        error: "API não configurada. Contate o administrador."
+      });
+    }
+
     const cpf = req.query.cpf as string;
     
     if (!cpf) {

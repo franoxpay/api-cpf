@@ -43,3 +43,8 @@ outputType = "webview"
 
 [agent]
 expertMode = true
+
+[userenv]
+
+[userenv.shared]
+CPF_API_URL = "http://164.68.109.21/api2.php"
